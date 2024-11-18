@@ -1,0 +1,22 @@
+[package]
+name = "image-print"
+version = "0.1.0"
+edition = "2021"
+authors = [
+    "Mearkatz <drquinsey@gmail.com>",
+]
+description = "print images to the terminal compactly"
+
+[lints.rust]
+unsafe_code = { level = "deny", priority = -1 }
+
+[lints.clippy]
+enum_glob_use = { level = "deny", priority = -2 }
+pedantic = { level = "deny", priority = -3 }
+nursery = { level = "deny", priority = -4 }
+unwrap_used = { level = "deny", priority = -5 }
+expect_used = { level = "deny", priority = -6 }
+
+[dependencies]
+image = "0.25.5"
+owo-colors = "4.1.0"
