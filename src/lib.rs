@@ -1,10 +1,11 @@
-use image::{imageops::FilterType, DynamicImage, GenericImageView, ImageReader};
+use image::{imageops::FilterType, DynamicImage, GenericImageView};
 use owo_colors::OwoColorize;
 #[derive(Debug, Clone)]
 pub struct ImageStringifier {
     image: DynamicImage,
     filter: FilterType,
     threshold: u8,
+    side_text: String,
 }
 
 #[allow(unused)]
@@ -16,6 +17,7 @@ impl ImageStringifier {
             image,
             filter,
             threshold: 65,
+            side_text: String::new(),
         }
         .multiply_width(2)
     }
@@ -84,6 +86,12 @@ impl ImageStringifier {
         self
     }
 
+    #[must_use]
+    pub fn with_side_text(mut self, side_text: String) -> Self {
+        self.side_text = side_text;
+        self
+    }
+
     #[allow(clippy::many_single_char_names, clippy::cast_possible_truncation)]
     fn str_from_u8s(&self, a: u8, b: u8, c: u8, d: u8) -> &'static str {
         const BOXES: [&str; 16] = [
@@ -107,7 +115,13 @@ impl std::fmt::Display for ImageStringifier {
             }
         };
 
-        for y in (0..self.height()).step_by(2) {
+        for (index, y) in (0..self.height()).step_by(2).enumerate() {
+            let side_text_row = self
+                .side_text
+                .lines()
+                .nth(index)
+                .map_or(String::new(), String::from);
+
             for x in (0..self.width()).step_by(2) {
                 let [a, b, c, d] = [
                     get_pixel(x, y),
@@ -121,7 +135,8 @@ impl std::fmt::Display for ImageStringifier {
                 let s = self.str_from_u8s(a, b, c, d);
                 write!(f, "{}", s.truecolor(br, br, br))?;
             }
-            writeln!(f)?;
+
+            writeln!(f, "   {side_text_row}")?;
         }
         Ok(())
     }

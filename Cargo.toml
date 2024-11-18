@@ -20,3 +20,7 @@ expect_used = { level = "deny", priority = -6 }
 [dependencies]
 image = "0.25.5"
 owo-colors = "4.1.0"
+
+
+[[bin]]
+name = "main"
