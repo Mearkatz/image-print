@@ -1,7 +1,7 @@
 use image::{imageops::FilterType, DynamicImage, GenericImageView, ImageReader};
 use owo_colors::OwoColorize;
-
-struct ImageStringifier {
+#[derive(Debug, Clone)]
+pub struct ImageStringifier {
     image: DynamicImage,
     filter: FilterType,
     threshold: u8,
@@ -10,6 +10,7 @@ struct ImageStringifier {
 #[allow(unused)]
 impl ImageStringifier {
     /// Creates a new `ImageStringifier` given an image and a filter to use when scaling the image to display it in the terminal        
+    #[must_use]
     pub fn new(image: DynamicImage, filter: FilterType) -> Self {
         Self {
             image,
@@ -19,20 +20,24 @@ impl ImageStringifier {
         .multiply_width(2)
     }
 
+    #[must_use]
     pub fn width(&self) -> u32 {
         self.image.dimensions().0
     }
 
+    #[must_use]
     pub fn height(&self) -> u32 {
         self.image.dimensions().1
     }
 
+    #[must_use]
     pub fn scale_up(mut self, n: u32) -> Self {
         self.image = self
             .image
             .resize_exact(self.width() * n, self.height() * n, self.filter);
         self
     }
+    #[must_use]
     pub fn scale_down(mut self, n: u32) -> Self {
         self.image = self
             .image
@@ -40,6 +45,7 @@ impl ImageStringifier {
         self
     }
 
+    #[must_use]
     pub fn multiply_width(mut self, n: u32) -> Self {
         self.image = self
             .image
@@ -48,6 +54,7 @@ impl ImageStringifier {
         self
     }
 
+    #[must_use]
     pub fn divide_width(mut self, n: u32) -> Self {
         self.image = self
             .image
@@ -55,6 +62,7 @@ impl ImageStringifier {
         self
     }
 
+    #[must_use]
     pub fn multiply_height(mut self, n: u32) -> Self {
         self.image = self
             .image
@@ -62,6 +70,7 @@ impl ImageStringifier {
         self
     }
 
+    #[must_use]
     pub fn divide_height(mut self, n: u32) -> Self {
         self.image = self
             .image
@@ -69,6 +78,7 @@ impl ImageStringifier {
         self
     }
 
+    #[must_use]
     pub const fn with_threshold(mut self, threshold: u8) -> Self {
         self.threshold = threshold;
         self
