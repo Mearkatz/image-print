@@ -116,13 +116,3 @@ impl std::fmt::Display for ImageStringifier {
         Ok(())
     }
 }
-
-#[allow(clippy::unwrap_used)]
-fn main() {
-    let image = ImageReader::open("src/sprite.png")
-        .unwrap()
-        .decode()
-        .unwrap();
-    let x = ImageStringifier::new(image, FilterType::Triangle);
-    println!("{x}");
-}
