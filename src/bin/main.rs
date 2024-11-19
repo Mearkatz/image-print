@@ -1,15 +1,18 @@
 use image::ImageReader;
-use image_print::ImageStringifier;
+use image_print::{ImageStringifier, MakeRow};
 
 #[allow(clippy::unwrap_used)]
 fn main() {
     let image = ImageReader::open("src/sprite.png")
         .unwrap()
         .decode()
-        .unwrap();
+        .unwrap()
+        .adjust_contrast(-0.5);
 
-    let x = ImageStringifier::new(image, image::imageops::FilterType::Gaussian)
-        .with_side_text("Hello World\nThis is line two".to_string());
+    let is = ImageStringifier::new(&image, image::imageops::FilterType::CatmullRom);
 
-    println!("{x}");
+    for y in 0..is.height() {
+        print!("{}", is.make_row(y));
+        println!(" Hello world :3");
+    }
 }
