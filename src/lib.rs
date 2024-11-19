@@ -139,6 +139,13 @@ pub struct ColorStr<'a> {
     br: u8,
 }
 
+impl<'a> ColorStr<'a> {
+    #[must_use]
+    pub const fn new(str: &'a str, br: u8) -> Self {
+        Self { str, br }
+    }
+}
+
 impl<'a> std::fmt::Display for ColorStr<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.str.truecolor(self.br, self.br, self.br))
