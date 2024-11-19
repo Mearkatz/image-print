@@ -150,6 +150,13 @@ pub struct Row<'a> {
     items: Box<[ColorStr<'a>]>,
 }
 
+impl<'a> Row<'a> {
+    #[must_use]
+    pub const fn new(items: Box<[ColorStr<'a>]>) -> Self {
+        Self { items }
+    }
+}
+
 impl<'a> std::fmt::Display for Row<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         self.items.iter().try_for_each(|i| write!(f, "{i}"))
