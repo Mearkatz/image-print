@@ -138,6 +138,17 @@ pub struct StyleString {
     style: Style,
 }
 
+impl From<String> for StyleString {
+    fn from(value: String) -> Self {
+        Self::new(value, Style::new())
+    }
+}
+impl<'a> From<&'a str> for StyleString {
+    fn from(value: &'a str) -> Self {
+        Self::from(value.to_string())
+    }
+}
+
 impl StyleString {
     #[must_use]
     pub const fn new(string: String, style: Style) -> Self {
