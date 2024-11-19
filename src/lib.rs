@@ -99,12 +99,12 @@ impl ImageStringifier {
     }
 }
 
-pub trait MakeRow<'a> {
+pub trait MakeRow {
     type Index;
     fn make_row(&self, row: Self::Index) -> Row;
 }
 
-impl<'a> MakeRow<'a> for ImageStringifier {
+impl MakeRow for ImageStringifier {
     type Index = u32;
     #[allow(clippy::many_single_char_names, clippy::cast_possible_truncation)]
     #[must_use]
