@@ -1,5 +1,5 @@
 use image::{imageops::FilterType, DynamicImage, GenericImageView};
-use owo_colors::OwoColorize;
+use owo_colors::{OwoColorize, Style};
 #[derive(Debug, Clone)]
 pub struct ImageStringifier {
     image: DynamicImage,
@@ -101,14 +101,14 @@ impl ImageStringifier {
 
 pub trait MakeRow<'a> {
     type Index;
-    fn make_row(&self, row: Self::Index) -> Row<'a>;
+    fn make_row(&self, row: Self::Index) -> Row;
 }
 
 impl<'a> MakeRow<'a> for ImageStringifier {
     type Index = u32;
     #[allow(clippy::many_single_char_names, clippy::cast_possible_truncation)]
     #[must_use]
-    fn make_row(&self, row: Self::Index) -> Row<'a> {
+    fn make_row(&self, row: Self::Index) -> Row {
         let items = (0..self.width())
             .step_by(2)
             .map(move |x| {
@@ -119,14 +119,12 @@ impl<'a> MakeRow<'a> for ImageStringifier {
                     self.get_pixel(x + 1, row + 1),
                 ];
 
-                let brightness =
-                    ((u16::from(a) + u16::from(b) + u16::from(c) + u16::from(d)) / 4) as u8;
+                let br = ((u16::from(a) + u16::from(b) + u16::from(c) + u16::from(d)) / 4) as u8;
 
-                let string = self.str_from_u8s(a, b, c, d);
-                ColorStr {
-                    str: string,
-                    br: brightness,
-                }
+                StyleString::new(
+                    self.str_from_u8s(a, b, c, d).to_string(),
+                    Style::new().truecolor(br, br, br),
+                )
             })
             .collect();
 
@@ -134,37 +132,38 @@ impl<'a> MakeRow<'a> for ImageStringifier {
     }
 }
 
-pub struct ColorStr<'a> {
-    str: &'a str,
-    br: u8,
+/// A String which might have a color and style applied to it
+pub struct StyleString {
+    string: String,
+    style: Style,
 }
 
-impl<'a> ColorStr<'a> {
+impl StyleString {
     #[must_use]
-    pub const fn new(str: &'a str, br: u8) -> Self {
-        Self { str, br }
+    pub const fn new(string: String, style: Style) -> Self {
+        Self { string, style }
     }
 }
 
-impl<'a> std::fmt::Display for ColorStr<'a> {
+impl std::fmt::Display for StyleString {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.str.truecolor(self.br, self.br, self.br))
+        write!(f, "{}", self.string.style(self.style))
     }
 }
 
 /// A row of an image that exists purely to be printed.
-pub struct Row<'a> {
-    items: Box<[ColorStr<'a>]>,
+pub struct Row {
+    items: Box<[StyleString]>,
 }
 
-impl<'a> Row<'a> {
+impl Row {
     #[must_use]
-    pub const fn new(items: Box<[ColorStr<'a>]>) -> Self {
+    pub const fn new(items: Box<[StyleString]>) -> Self {
         Self { items }
     }
 }
 
-impl<'a> std::fmt::Display for Row<'a> {
+impl std::fmt::Display for Row {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         self.items.iter().try_for_each(|i| write!(f, "{i}"))
     }
