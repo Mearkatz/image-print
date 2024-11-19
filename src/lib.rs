@@ -21,6 +21,10 @@ impl ImageStringifier {
         }
     }
 
+    pub fn iter_rows(self) -> impl Iterator<Item = Row> {
+        (0..self.height()).map(move |i| self.make_row(i))
+    }
+
     #[must_use]
     pub fn get_pixel(&self, x: u32, y: u32) -> u8 {
         if x < self.width() && y < self.height() {
@@ -96,6 +100,16 @@ impl ImageStringifier {
             + (usize::from(b > self.threshold) * 4)
             + (usize::from(c > self.threshold) * 2)
             + (usize::from(d > self.threshold)))]
+    }
+}
+
+#[allow(clippy::many_single_char_names, clippy::cast_possible_truncation)]
+impl std::fmt::Display for ImageStringifier {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        self.clone()
+            .iter_rows()
+            .step_by(2)
+            .try_for_each(|row| writeln!(f, "{row}"))
     }
 }
 
@@ -177,14 +191,5 @@ impl Row {
 impl std::fmt::Display for Row {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         self.items.iter().try_for_each(|i| write!(f, "{i}"))
-    }
-}
-
-#[allow(clippy::many_single_char_names, clippy::cast_possible_truncation)]
-impl std::fmt::Display for ImageStringifier {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        (0..self.height())
-            .step_by(2)
-            .try_for_each(|y| writeln!(f, "{}", self.make_row(y)))
     }
 }
