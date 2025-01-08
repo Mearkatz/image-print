@@ -21,6 +21,19 @@ impl ImageStringifier {
         }
     }
 
+    pub fn print_with_rows_beside(&self, rows: &[Row]) {
+        for i in 0..self.height() {
+            let left = self.make_row(i);
+            let right = rows.get(i as usize);
+
+            print!("{left}");
+            if let Some(r) = right {
+                print!("{r}");
+            }
+            println!();
+        }
+    }
+
     pub fn iter_rows(self) -> impl Iterator<Item = Row> {
         (0..self.height()).map(move |i| self.make_row(i))
     }

@@ -1,5 +1,6 @@
 use image::ImageReader;
-use image_print::{ImageStringifier, MakeRow};
+use image_print::{ImageStringifier, Row, StyleString};
+use owo_colors::Style;
 
 #[allow(clippy::unwrap_used)]
 fn main() {
@@ -9,10 +10,15 @@ fn main() {
         .unwrap()
         .adjust_contrast(-0.5);
 
-    let is = ImageStringifier::new(&image, image::imageops::FilterType::CatmullRom);
+    let single_string_row = |s: &str, style: Style| {
+        let style_str = StyleString::new(s.to_string(), style);
+        Row::new(Box::new([style_str]))
+    };
 
-    for y in 0..is.height() {
-        print!("{}", is.make_row(y));
-        println!(" Hello world :3");
-    }
+    ImageStringifier::new(&image, image::imageops::FilterType::CatmullRom).print_with_rows_beside(
+        &[
+            single_string_row("Hello, World", Style::new().on_blue().white()),
+            single_string_row("Hello, World", Style::new().yellow().on_black()),
+        ],
+    );
 }
